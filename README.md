@@ -126,32 +126,6 @@ Rectangle 1 de largeur: 5.0 et de longueur : 10.0 Aire:50.0
 
 ---
 
-## Question 2 : Squelette d'algorithme et instanciation dynamique de plugins
-
-### Énoncé
-> *« Un plugin contient une opération implémentant le squelette d’un algorithme dont deux parties (partie1 et partie2) sont variables. On voudrait laisser au développeur la possibilité d’implémenter les deux parties manquantes de cet algorithme et on voudrait aussi que l’application cliente puisse instancier une implémentation concrète du plugin sans connaître sa classe d’implémentation. »*
-
-*Statut : En cours de réalisation.*
-
----
-
-## Question 3 : Extension dynamique de responsabilités d'un composant
-
-### Énoncé
-> *« On dispose d’un composant implémentant une interface qui définit une opération « traitement() ». On voudrait rattacher à ce composant des responsabilités supplémentaires sans modifier son code source. C'est-à-dire envelopper l’exécution de la méthode traitement par d’autres traitements avant et après son exécution. »*
-
-*Statut : À traiter.*
-
----
-
-## Question 4 : Système de notification d'état à couplage faible
-
-### Énoncé
-> *« On désire créer une classe Joueur ayant un état représenté par une variable score de type int. On voudrait que les objets de l’environnement du jeu (Couloir, Caméra et Gardien) soient informés à chaque fois que le score du joueur change tout en gardant un couplage faible entre la classe Joueur et les autres classes. »*
-
-*Statut : À traiter.*
-
----
 
 ## Arborescence du Projet (Branche `exercice-1`)
 
