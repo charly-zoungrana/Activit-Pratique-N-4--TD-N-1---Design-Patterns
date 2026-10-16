@@ -2,6 +2,7 @@
 
 **Module :** Conception Orientée Objet & Design Patterns  
 **Enseignant :** Pr. Mohamed Youssfi  
+**Etudiant :** ZOUNGRANA Charly 
 **Branche Git :** `exercice-1`
 
 ---
