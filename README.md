@@ -14,7 +14,7 @@ L'Exercice 1 porte sur l'analyse de situations de conception récurrentes et l'i
 1. [Question 1 : Modélisation de figures géométriques simples et composites](#question-1--modélisation-de-figures-géométriques-simples-et-composites) *(Traité)*
 2. [Question 2 : Squelette d'algorithme et instanciation dynamique de plugins](#question-2--squelette-dalgorithme-et-instanciation-dynamique-de-plugins) *(Traité)*
 3. [Question 3 : Extension dynamique de responsabilités d'un composant](#question-3--extension-dynamique-de-responsabilités-dun-composant) *(Traité)*
-4. [Question 4 : Système de notification d'état à couplage faible](#question-4--système-de-notification-détat-à-couplage-faible) *(À venir)*
+4. [Question 4 : Système de notification d'état à couplage faible](#question-4--système-de-notification-détat-à-couplage-faible) *(Traité)*
 
 ---
 
@@ -430,10 +430,194 @@ public class Test {
 
 ## Question 4 : Système de notification d'état à couplage faible
 
-### Énoncé
+### 1. Énoncé
 > *« On désire créer une classe Joueur ayant un état représenté par une variable score de type int. On voudrait que les objets de l’environnement du jeu (Couloir, Caméra et Gardien) soient informés à chaque fois que le score du joueur change tout en gardant un couplage faible entre la classe Joueur et les autres classes. »*
 
-*Statut : À venir.*
+Cette problématique requiert la mise en place d'un canal de communication un-à-plusieurs (*one-to-many*) réactif, assurant la synchronisation en temps réel de plusieurs entités hétérogènes de l'environnement du jeu en fonction des variations d'état d'un joueur, tout en éliminant toute adhérence forte entre l'émetteur et les récepteurs.
+
+---
+
+### 2. Choix et Justification du Design Pattern : **Observer** (*Observateur / Publish-Subscribe*)
+
+Le patron comportemental **Observer** (GoF) constitue la solution de référence pour répondre à ce besoin :
+
+- **Découplage et couplage faible (*Loose Coupling*) :** La classe émettrice (`Joueur`, rôle de Sujet / *Observable*) n'a aucune dépendance directe envers les classes concrètes de l'environnement (`Camera`, `Couloir`, `Gardien`). Elle communique uniquement à travers l'interface abstraite `Observer`.
+- **Souscription dynamique :** Les observateurs peuvent s'abonner (`subscribe`) ou se désabonner (`unsubscribe`) dynamiquement au cours du cycle de vie du jeu, sans exiger la moindre modification de la classe `Joueur`.
+- **Principe Ouvert / Fermé (Open/Closed Principle - OCP) :** De nouveaux éléments de gameplay (ex. `Piege`, `TableauScores`, `Boss`) peuvent être introduits dans le système en implémentant simplement le contrat `Observer`, sans impacter l'architecture existante.
+- **Modèle de notification souple (Mode *Pull*) :** Lors de l'invocation de `notifyObservers()`, le joueur transmet sa propre référence (`this`) à chaque observateur via `observer.update(this)`. Chaque entité observatrice interroge alors sélectivement l'état (`joueur.getScore()`) et applique ses propres critères et logiques métier (ex. réactivité immédiate pour la caméra, seuil à 5 pour le couloir, seuil à 10 pour le gardien).
+
+---
+
+### 3. Diagramme de Classes
+
+Le diagramme de classes ci-dessous modélise l'architecture du patron Observer mise en œuvre :
+
+![Diagramme de classes - Pattern Observer](./diagramme-classe-exo-1-question-4.png)
+
+#### Analyse des relations :
+- **`Observable` :** Interface définissant le contrat de gestion des abonnements (`subscribe(Observer o)`, `unsubscribe(Observer o)`) et de notification (`notifyObservers()`).
+- **`Joueur` :** Sujet concret (*Concrete Subject*) implémentant `Observable`, encapsulant l'état `score : int` et agrégeant une collection polymorphique `List<Observer> observers`.
+- **`Observer` :** Interface abstraite pour les récepteurs, déclarant la méthode de mise à jour `update(Joueur joueur)`.
+- **`Camera`, `Couloir`, `Gardien` :** Observateurs concrets (*Concrete Observers*) implémentant `Observer` et définissant leur propre comportement en réaction aux variations du score.
+
+---
+
+### 4. Description de l'Implémentation
+
+Le code est structuré sous le package `net.zoungrana.question4` :
+
+#### A. Interface du Sujet : `Observable`
+Définit le contrat d'enregistrement et d'avertissement :
+```java
+package net.zoungrana.question4;
+
+public interface Observable {
+    void subscribe(Observer o);
+    void unsubscribe(Observer o);
+    void notifyObservers();
+}
+```
+
+#### B. Interface des Observateurs : `Observer`
+Définit le point d'entrée pour la réception des notifications :
+```java
+package net.zoungrana.question4;
+
+public interface Observer {
+    void update(Joueur joueur);
+}
+```
+
+#### C. Sujet Concret : `Joueur`
+Encapsule l'état et orchestre la diffusion des événements :
+```java
+package net.zoungrana.question4;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Joueur implements Observable {
+    private int score;
+    List<Observer> observers = new ArrayList<>();
+
+    @Override
+    public void subscribe(Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void unsubscribe(Observer o) {
+        observers.remove(o);
+    }
+
+    @Override
+    public void notifyObservers() {
+        observers.forEach(observer -> observer.update(this));
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+        notifyObservers();
+    }
+
+    public int getScore() {
+        return score;
+    }
+}
+```
+
+#### D. Observateurs Concrets de l'Environnement
+Chaque entité concrétise une réaction contextualisée au score du joueur :
+- **`Camera` :** Réagit systématiquement à chaque changement de score.
+  ```java
+  package net.zoungrana.question4;
+
+  public class Camera implements Observer {
+      @Override
+      public void update(Joueur joueur) {
+          System.out.println("****************** Caméra *******************");
+          System.out.println("Camera: " + joueur.getScore());
+          System.out.println("******************** Caméra *****************");
+      }
+  }
+  ```
+- **`Couloir` :** Ne s'active que si le score atteint ou dépasse le seuil de 5.
+  ```java
+  package net.zoungrana.question4;
+
+  public class Couloir implements Observer {
+      @Override
+      public void update(Joueur joueur) {
+          if (joueur.getScore() >= 5) {
+              System.out.println("+++++++++++++++++++++ Couloir ++++++++++++++++++++++");
+              System.out.println("Couloir: " + joueur.getScore());
+              System.out.println("+++++++++++++++++++++ Couloir ++++++++++++++++++++++");
+          }
+      }
+  }
+  ```
+- **`Gardien` :** Ne réagit que si le score atteint ou dépasse le palier d'alerte de 10.
+  ```java
+  package net.zoungrana.question4;
+
+  public class Gardien implements Observer {
+      @Override
+      public void update(Joueur joueur) {
+          if (joueur.getScore() >= 10) {
+              System.out.println("====================== Gardien ===================");
+              System.out.println("Gardien: " + joueur.getScore());
+              System.out.println("====================== Gardien ====================");
+          }
+      }
+  }
+  ```
+
+---
+
+### 5. Programme de Test et Explication
+
+La classe `Test` orchestre la souscription des observateurs et simule deux variations d'état :
+
+```java
+package net.zoungrana.question4;
+
+import java.util.stream.Stream;
+
+public class Test {
+    public static void main(String[] args) {
+        Joueur joueur = new Joueur();
+        Camera c = new Camera();
+        Gardien g = new Gardien();
+        Couloir co = new Couloir();
+
+        Stream.of(c, g, co).forEach(joueur::subscribe);
+        joueur.setScore(5);
+
+        System.out.println("-----------------------------------------");
+        joueur.setScore(15);
+    }
+}
+```
+
+#### Déroulement de l'exécution :
+1. **Enregistrement des abonnés :** Les instances `Camera`, `Gardien` et `Couloir` s'abonnent auprès de l'instance `Joueur`.
+2. **Premier événement (`score = 5`) :**
+   - La méthode `setScore(5)` déclenche `notifyObservers()`.
+   - `Camera` notifie immédiatement la valeur 5.
+   - `Gardien` vérifie sa condition ($5 \ge 10$ : faux) et reste silencieux.
+   - `Couloir` valide sa condition ($5 \ge 5$ : vrai) et affiche son message d'alerte.
+3. **Second événement (`score = 15`) :**
+   - La méthode `setScore(15)` déclenche `notifyObservers()`.
+   - `Camera` affiche la nouvelle valeur 15.
+   - `Gardien` valide sa condition ($15 \ge 10$ : vrai) et déclenche son alerte.
+   - `Couloir` valide sa condition ($15 \ge 5$ : vrai) et affiche son alerte.
+
+---
+
+### 6. Trace d'Exécution
+
+#### Capture écran de la console
+![Trace d'exécution console](./execution-exo1-question-4.png)
 
 ---
 
@@ -446,9 +630,11 @@ TD-1-Design-Pattern/
 ├── diagramme-classe-exo-1-question1-real.png
 ├── diagramme-classe-exo-1-question-2.png
 ├── diagramme-classe-exo-1-question-3.png
+├── diagramme-classe-exo-1-question-4.png
 ├── exo1-question-1-execution.png
 ├── execution-exo1-question-2.png
 ├── execution-exo1-question-3.png
+├── execution-exo1-question-4.png
 └── src/
     └── main/
         └── java/
@@ -466,11 +652,19 @@ TD-1-Design-Pattern/
                     │   ├── PluginB.java
                     │   ├── PluginFactory.java
                     │   └── Test.java
-                    └── question3/
-                        ├── TraitementInterface.java
-                        ├── Composant.java
-                        ├── DecorateurAbstrait.java
-                        ├── ResponsabiliteSupADecorator.java
-                        ├── ResponsabiliteSupBDecorator.java
+                    ├── question3/
+                    │   ├── TraitementInterface.java
+                    │   ├── Composant.java
+                    │   ├── DecorateurAbstrait.java
+                    │   ├── ResponsabiliteSupADecorator.java
+                    │   ├── ResponsabiliteSupBDecorator.java
+                    │   └── Test.java
+                    └── question4/
+                        ├── Observable.java
+                        ├── Observer.java
+                        ├── Joueur.java
+                        ├── Camera.java
+                        ├── Couloir.java
+                        ├── Gardien.java
                         └── Test.java
 ```
