@@ -1,9 +1,13 @@
-package net.zoungrana.exercice1;
+package net.zoungrana.question1;
 
 public class Cercle extends Figure{
-    private final double rayon;
+    private  double rayon;
 
-    public Cercle(double rayon) {
+    public Cercle(String name){
+        super(name);
+    }
+    public Cercle(String name,double rayon) {
+        super(name);
         this.rayon = rayon;
     }
 
@@ -15,7 +19,7 @@ public class Cercle extends Figure{
     @Override
     public void afficherFigure() {
         System.out.println("*************************************");
-        System.out.println("Cercle de rayon : " + rayon + " Aire:"+ calculerAire());
+        System.out.println(name+" Rayon:" + rayon + " Aire:"+ calculerAire());
         System.out.println("*************************************");
     }
 }

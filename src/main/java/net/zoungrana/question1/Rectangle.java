@@ -1,10 +1,15 @@
-package net.zoungrana.exercice1;
+package net.zoungrana.question1;
 
 public class Rectangle extends Figure{
-    private final double largeur;
-    private final double longueur;
+    private  double largeur;
+    private  double longueur;
 
-    public Rectangle(double largeur, double longueur) {
+    public Rectangle(String name){
+        super(name);
+    }
+
+    public Rectangle(String name,double largeur, double longueur) {
+        super(name);
         this.largeur = largeur;
         this.longueur = longueur;
     }
@@ -17,7 +22,7 @@ public class Rectangle extends Figure{
     @Override
     public void afficherFigure() {
         System.out.println("*************************************");
-        System.out.println("Rectangle de largeur : " + largeur + " et de longueur : " + longueur + " Aire:"+ calculerAire());
+        System.out.println(name +" de largeur: " +largeur + " et de longueur : " + longueur + " Aire:"+ calculerAire());
         System.out.println("*************************************");
     }
 }
