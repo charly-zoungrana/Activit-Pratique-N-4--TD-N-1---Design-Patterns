@@ -2,6 +2,7 @@
 
 **Module :** Conception Orientée Objet & Design Patterns  
 **Enseignant :** Pr. Mohamed Youssfi  
+**Étudiant :** ZOUNGRANA Charly  
 **Branche Git :** `exercice-1`
 
 ---
@@ -40,7 +41,7 @@ Le patron de conception structurel **Composite** répond rigoureusement à cette
 
 Le diagramme suivant présente la structure mise en œuvre pour la Question 1 :
 
-![Diagramme de classes - Pattern Composite](./diagramme-classe-exo-1-question-1.png)
+![Diagramme de classes - Pattern Composite](./diagramme-classe-exo-1-question1-real.png)
 
 
 ---
@@ -133,7 +134,7 @@ Rectangle 1 de largeur: 5.0 et de longueur : 10.0 Aire:50.0
 TD-1-Design-Pattern/
 ├── pom.xml
 ├── README.md
-├── diagramme-classe-exo-1-question-1.png
+├── diagramme-classe-exo-1-question1-real.png
 ├── exo1-question-1-execution.png
 └── src/
     └── main/
