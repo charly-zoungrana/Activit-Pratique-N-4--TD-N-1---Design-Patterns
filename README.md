@@ -41,7 +41,7 @@ Le patron de conception structurel **Composite** répond rigoureusement à cette
 
 Le diagramme suivant présente la structure mise en œuvre pour la Question 1 :
 
-![Diagramme de classes - Pattern Composite](./diagramme-classe-exo-1-question-1-real.png)
+[diagramme-classe-exo-1-question1-real.png](diagramme-classe-exo-1-question1-real.png))
 
 
 ---
