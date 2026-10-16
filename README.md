@@ -42,31 +42,6 @@ Le diagramme suivant présente la structure mise en œuvre pour la Question 1 :
 
 ![Diagramme de classes - Pattern Composite](./diagramme-classe-exo-1-question-1.png)
 
-```
-                       +-----------------------------------+
-                       |        Figure {abstract}          |
-                       +-----------------------------------+
-                       | # name : String                   |
-                       +-----------------------------------+
-                       | + calculerAire() : double         |
-                       | + afficherFigure() : void         |
-                       +-----------------------------------+
-                                       ^
-        +------------------------------+------------------------------+
-        |                              |                              |
-+-------------------+        +--------------------+        +---------------------+
-|      Cercle       |        |     Rectangle      |        |    GroupeFigure     |
-+-------------------+        +--------------------+        +---------------------+
-| - rayon : double  |        | - largeur : double |        | - figures : List<..>|
-+-------------------+        | - longueur : double|        +---------------------+
-| + calculerAire()  |        +--------------------+        | + calculerAire()    |
-| + afficherFigure()|        | + calculerAire()   |        | + afficherFigure()  |
-+-------------------+        | + afficherFigure() |        | + ajouterFigure()   |
-                             +--------------------+        +---------------------+
-                                                                      | 0..*
-                                                                      v
-                                                                   Figure
-```
 
 ---
 
