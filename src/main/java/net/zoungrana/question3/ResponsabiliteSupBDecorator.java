@@ -2,8 +2,8 @@ package net.zoungrana.question3;
 
 public class ResponsabiliteSupBDecorator extends DecorateurAbstrait{
 
-    public ResponsabiliteSupBDecorator(TraitementInterface traitement){
-        super(traitement);
+    public ResponsabiliteSupBDecorator(TraitementInterface composant){
+        super(composant);
     }
 
     @Override

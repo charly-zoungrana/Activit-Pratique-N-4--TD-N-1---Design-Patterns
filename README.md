@@ -13,7 +13,7 @@ L'Exercice 1 porte sur l'analyse de situations de conception récurrentes et l'i
 
 1. [Question 1 : Modélisation de figures géométriques simples et composites](#question-1--modélisation-de-figures-géométriques-simples-et-composites) *(Traité)*
 2. [Question 2 : Squelette d'algorithme et instanciation dynamique de plugins](#question-2--squelette-dalgorithme-et-instanciation-dynamique-de-plugins) *(Traité)*
-3. [Question 3 : Extension dynamique de responsabilités d'un composant](#question-3--extension-dynamique-de-responsabilités-dun-composant) *(À venir)*
+3. [Question 3 : Extension dynamique de responsabilités d'un composant](#question-3--extension-dynamique-de-responsabilités-dun-composant) *(Traité)*
 4. [Question 4 : Système de notification d'état à couplage faible](#question-4--système-de-notification-détat-à-couplage-faible) *(À venir)*
 
 ---
@@ -105,24 +105,6 @@ public class Test {
 #### Capture écran de la console
 ![Trace d'exécution console](./exo1-question-1-execution.png)
 
-#### Sortie texte
-```text
-*************************************
-Cercle 1 Rayon:5.0 Aire:78.53981633974483
-*************************************
-*************************************
-Rectangle 1 de largeur: 5.0 et de longueur : 10.0 Aire:50.0
-*************************************
--------------------- Groupe---------------------------
-Aire du groupe: 128.53981633974485
-*************************************
-Cercle 1 Rayon:5.0 Aire:78.53981633974483
-*************************************
-*************************************
-Rectangle 1 de largeur: 5.0 et de longueur : 10.0 Aire:50.0
-*************************************
--------------------------------------------------------
-```
 
 ---
 
@@ -283,34 +265,166 @@ public class Test {
 #### Capture écran de la console
 ![Trace d'exécution console](./execution-exo1-question-2.png)
 
-#### Sortie texte
-```text
-Preparation
-**************** Plugin A *******************
-Algo part 1 depuis Plugin A
-********************************************
-**************** Plugin A *******************
-Algo part 2 depuis Plugin A
-********************************************
-Terminer
-Preparation
-**************** Plugin B *******************
-Algo part 1 depuis Plugin B
-********************************************
-**************** Plugin B *******************
-Algo part 2 depuis Plugin B
-********************************************
-Terminer
-```
+
 
 ---
 
 ## Question 3 : Extension dynamique de responsabilités d'un composant
 
-### Énoncé
+### 1. Énoncé
 > *« On dispose d’un composant implémentant une interface qui définit une opération « traitement() ». On voudrait rattacher à ce composant des responsabilités supplémentaires sans modifier son code source. C'est-à-dire envelopper l’exécution de la méthode traitement par d’autres traitements avant et après son exécution. »*
 
-*Statut : À venir.*
+Cette situation pose une problématique classique d'extensibilité logicielle : comment enrichir le comportement d'une classe existante sans altérer son code source, sans briser l'encapsulation et sans recourir à une sous-classification statique excessive ?
+
+---
+
+### 2. Choix et Justification du Design Pattern : **Decorator** (*Décorateur / Wrapper*)
+
+Le patron structurel **Decorator** (GoF) répond fidèlement à cette exigence :
+
+- **Attachement dynamique de responsabilités :** Contrairement à l'héritage qui fige les comportements au moment de la compilation, le décorateur permet d'adjoindre des fonctionnalités supplémentaires à un objet dynamiquement à l'exécution (*runtime*).
+- **Principe Ouvert / Fermé (Open/Closed Principle - OCP) :** La classe de base (`Composant`) reste intacte et fermée à la modification, tout en étant ouverte à des extensions fonctionnelles par l'ajout de nouveaux décorateurs.
+- **Transparence et substituabilité :** Le décorateur abstrait (`DecorateurAbstrait`) et le composant concret (`Composant`) partagent la même interface racine (`TraitementInterface`). Le client manipule ainsi les objets décorés de manière transparente sans changer de type d'abstraction.
+- **Enveloppement avant / après (*Wrapping*) :** Les décorateurs concrets (`ResponsabiliteSupADecorator`, `ResponsabiliteSupBDecorator`) interceptent l'appel à `traitement()`, injectent des traitements préliminaires (pré-traitements), délèguent l'exécution au composant enveloppé (`composant.traitement()`), puis déclenchent des traitements complémentaires (post-traitements).
+- **Composition récursive et combinatoire :** Ce patron permet d'empiler plusieurs décorateurs de manière cumulative (`ResponsabiliteSupBDecorator` enveloppant `ResponsabiliteSupADecorator`, qui enveloppe `Composant`), évitant ainsi l'explosion combinatoire de sous-classes.
+
+---
+
+### 3. Diagramme de Classes
+
+Le diagramme de classes illustre la structure du patron Decorator mise en œuvre :
+
+![Diagramme de classes - Pattern Decorator](./diagramme-classe-exo-1-question-3.png)
+
+#### Analyse des relations :
+- **`TraitementInterface` :** Interface racine commune exposant l'opération abstraite `+ traitement() : void`.
+- **`Composant` :** Implémentation concrète de base réalisant `TraitementInterface`.
+- **`DecorateurAbstrait` :** Classe abstraite implémentant `TraitementInterface` et maintenant une relation de composition/agrégation `1..1` vers une instance de `TraitementInterface` (`# composant`).
+- **`ResponsabiliteSupADecorator` & `ResponsabiliteSupBDecorator` :** Décorateurs concrets dérivant de `DecorateurAbstrait` et redéfinissant `traitement()` pour intercaler leurs traitements spécifiques avant et après la délégation.
+
+---
+
+### 4. Description de l'Implémentation
+
+Le code est structuré sous le package `net.zoungrana.question3` :
+
+#### A. Interface Commune : `TraitementInterface`
+Définit le contrat partagé entre le composant originel et l'ensemble de ses décorateurs :
+```java
+package net.zoungrana.question3;
+
+public interface TraitementInterface {
+    void traitement();
+}
+```
+
+#### B. Composant Concret : `Composant`
+Réalise le traitement standard initial sans préoccupation transversale :
+```java
+package net.zoungrana.question3;
+
+public class Composant implements TraitementInterface {
+    @Override
+    public void traitement() {
+        System.out.println("***************************");
+        System.out.println("Traitement de base");
+        System.out.println("***************************");
+    }
+}
+```
+
+#### C. Décorateur Abstrait : `DecorateurAbstrait`
+Maintient l'état du composant encapsulé :
+```java
+package net.zoungrana.question3;
+
+public abstract class DecorateurAbstrait implements TraitementInterface {
+    protected TraitementInterface composant;
+
+    public DecorateurAbstrait(TraitementInterface composant){
+        this.composant = composant;
+    }
+}
+```
+
+#### D. Décorateurs Concrets : `ResponsabiliteSupADecorator` & `ResponsabiliteSupBDecorator`
+Chaque décorateur concrétise le mécanisme d'interception :
+- **`ResponsabiliteSupADecorator` :**
+  ```java
+  package net.zoungrana.question3;
+
+  public class ResponsabiliteSupADecorator extends DecorateurAbstrait {
+
+      public ResponsabiliteSupADecorator(TraitementInterface composant){
+          super(composant);
+      }
+
+      @Override
+      public void traitement() {
+          System.out.println("************ Traitement supplémentaire A  ***************");
+          composant.traitement();
+          System.out.println("************** Traitement supplémentaire A *************");
+      }
+  }
+  ```
+- **`ResponsabiliteSupBDecorator` :**
+  ```java
+  package net.zoungrana.question3;
+
+  public class ResponsabiliteSupBDecorator extends DecorateurAbstrait {
+
+      public ResponsabiliteSupBDecorator(TraitementInterface composant){
+          super(composant);
+      }
+
+      @Override
+      public void traitement() {
+          System.out.println("************ Traitement Supplémentaire B ***************");
+          composant.traitement();
+          System.out.println("*************** Traitement Supplémentaire B ************");
+      }
+  }
+  ```
+
+---
+
+### 5. Programme de Test et Explication
+
+La classe `Test` démontre la composition dynamique et le chaînage d'enveloppes :
+
+```java
+package net.zoungrana.question3;
+
+public class Test {
+    public static void main(String[] args) {
+        TraitementInterface c = new Composant();
+        c = new ResponsabiliteSupADecorator(c);
+        c.traitement();
+
+        System.out.println("-----------------------------------------");
+
+        c = new ResponsabiliteSupBDecorator(c);
+        c.traitement();
+    }
+}
+```
+
+#### Déroulement de l'exécution :
+1. **Étape 1 — Décoration simple :** L'instance de `Composant` est enveloppée dans `ResponsabiliteSupADecorator`. L'appel `c.traitement()` déclenche le pré-traitement A, puis le traitement de base, puis le post-traitement A.
+2. **Étape 2 — Décoration cumulative :** La référence `c` (déjà décorée par A) est à nouveau enveloppée dans `ResponsabiliteSupBDecorator`. L'appel `c.traitement()` produit une exécution emboîtée de l'extérieur vers l'intérieur :
+   - Déclenchement du pré-traitement B.
+   - Délégation à `composant` (qui est le décorateur A) : exécution du pré-traitement A.
+   - Délégation au `Composant` d'origine : exécution du traitement de base.
+   - Exécution du post-traitement A.
+   - Exécution finale du post-traitement B.
+
+---
+
+### 6. Trace d'Exécution
+
+#### Capture écran de la console
+![Trace d'exécution console](./execution-exo1-question-3.png)
+
 
 ---
 
@@ -331,8 +445,10 @@ TD-1-Design-Pattern/
 ├── README.md
 ├── diagramme-classe-exo-1-question1-real.png
 ├── diagramme-classe-exo-1-question-2.png
+├── diagramme-classe-exo-1-question-3.png
 ├── exo1-question-1-execution.png
 ├── execution-exo1-question-2.png
+├── execution-exo1-question-3.png
 └── src/
     └── main/
         └── java/
@@ -344,10 +460,17 @@ TD-1-Design-Pattern/
                     │   ├── Rectangle.java
                     │   ├── GroupeFigure.java
                     │   └── Test.java
-                    └── question2/
-                        ├── Plugin.java
-                        ├── PluginA.java
-                        ├── PluginB.java
-                        ├── PluginFactory.java
+                    ├── question2/
+                    │   ├── Plugin.java
+                    │   ├── PluginA.java
+                    │   ├── PluginB.java
+                    │   ├── PluginFactory.java
+                    │   └── Test.java
+                    └── question3/
+                        ├── TraitementInterface.java
+                        ├── Composant.java
+                        ├── DecorateurAbstrait.java
+                        ├── ResponsabiliteSupADecorator.java
+                        ├── ResponsabiliteSupBDecorator.java
                         └── Test.java
 ```
