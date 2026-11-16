@@ -78,6 +78,18 @@ On retrouve le même principe dans l’exercice 1, question 2, où `Plugin.appli
 
 Les deux associations de `TraitementImage` pointent vers des types d’abstraction, `Filtre` et `Compresseur`. On peut ajouter un filtre en implémentant l’interface ou un compresseur en étendant la classe abstraite. Le client fournit les instances concrètes au framework, qui conserve les mêmes appels.
 
+## Question 2 — Implémentation Java du framework
+
+Le code du framework se trouve dans le package [`net.zoungrana.exercice2`](./src/main/java/net/zoungrana/exercice2). Le constructeur de `TraitementImage` reçoit un `Filtre` et un `Compresseur`. Les méthodes publiques `filter(data)` et `compresser(data)` délèguent chacune le traitement à l’instance correspondante.
+
+| Package | Mise en œuvre |
+| --- | --- |
+| [`filtrage`](./src/main/java/net/zoungrana/exercice2/filtrage) | `Filtre` définit le contrat Strategy. `FiltreSeuil` produit un tableau binaire en remplaçant chaque valeur inférieure au seuil par `0` et chaque autre valeur par `1`. `setFiltre` permet de remplacer la stratégie sur la même instance de `TraitementImage`. |
+| [`adaptation`](./src/main/java/net/zoungrana/exercice2/adaptation) | `AdaptateurFiltre` traduit l’appel `filter(data)` en `appliquerFiltre(filterName, data)`. L’implémentation d’exemple `ImplNonStandard` inverse les bits de chaque entier lorsque le filtre demandé est `inversion`. |
+| [`compression`](./src/main/java/net/zoungrana/exercice2/compression) | `Compresseur.compresser` est une méthode `final`. Elle copie le tableau d’entrée, appelle la méthode abstraite `encoder`, puis vérifie que le résultat est non nul. `CompresseurRle` implémente `encoder` en représentant chaque suite de valeurs identiques par une paire `(valeur, occurrences)`. |
+
+Par exemple, avec un seuil de 128, `[20, 140, 140, 140]` devient `[0, 1, 1, 1]` après filtrage. La compression RLE de ce résultat donne `[0, 1, 1, 3]`, soit un zéro suivi de trois uns.
+
 ## Question 3 — Application console
 
 Depuis la racine du projet, compiler puis lancer l’application avec Java 21.
