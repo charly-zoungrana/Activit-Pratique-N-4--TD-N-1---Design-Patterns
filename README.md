@@ -1,102 +1,79 @@
-# TD1 — Design Patterns
+# Exercice 2 — Framework de traitement d’images
 
-**Module :** Conception Orientée Objet & Design Patterns  
-**Enseignant :** Pr. Mohamed Youssfi  
-**Étudiant :** ZOUNGRANA Charly  
-**Branche Git courante :** `main` (Portail & Synthèse globale)
+- **Module** Conception Orientée Objet & Design Patterns
+- **Enseignant** Pr. Mohamed Youssfi
+- **Étudiant** ZOUNGRANA Charly
 
----
+[Retour au portail du TD sur `main`](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/blob/main/README.md)
 
-## Présentation Générale
-Ce dépôt regroupe l'ensemble des travaux réalisés dans le cadre du TD 1 du module Design Pattern. L'objectif est d'appliquer les principes fondamentaux de l'ingénierie logicielle  à travers la résolution de cas d'études concrets et le développement d'un framework extensible.
+## Question 1 — Diagramme de classes
 
-Le travail est articulé en deux exercices indépendants, gérés sur des branches Git dédiées afin d'assurer une traçabilité rigoureuse :
+Le framework représente une image par un tableau d’entiers (`int[]`). Il expose deux opérations, `filter(int[] data)` pour le filtrage et `compresser(int[] data)` pour la compression. Il doit accepter de nouveaux algorithmes sans modification de son noyau, permettre de changer de filtre à l’exécution et intégrer la classe de filtrage existante `ImplNonStandard`.
 
-1. **Exercice 1 :** Étude et mise en œuvre des patrons de conception fondamentaux.
-2. **Exercice 2 :** Conception et développement d'un Framework de traitement d'images.
+### Diagramme UML
 
----
+```mermaid
+classDiagram
+    class TraitementImage {
+        +setFiltre(Filtre filtre) void
+        +filter(int[] data) int[]
+        +compresser(int[] data) int[]
+    }
 
-## Organisation des Branches Git
+    class Filtre {
+        <<interface>>
+        +filter(int[] data) int[]
+    }
 
-Le projet suit une stratégie de branches thématiques :
+    class FiltreConcret {
+        +filter(int[] data) int[]
+    }
 
-| Branche Git | Contenu & Objectif | Statut | Accès direct |
-| :--- | :--- | :---: | :--- |
-| **`main`** | Portail général, synthèse globale et navigation inter-branches | **Actif** | *Branche courante* |
-| **`exercice-1`** | Solutions complètes des 4 situations (Composite, Template Method, Factory, Decorator, Observer), diagrammes et traces d'exécution | **Terminé** | [Consulter la branche `exercice-1`](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/tree/exercice-1) |
-| **`exercice-2`** | Framework de traitement d'images (Strategy, Adapter, Template Method, instanciation dynamique) | *En cours* | [Consulter la branche `exercice-2`](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/tree/exercice-2) *(bientôt disponible)* |
+    class AdaptateurFiltre {
+        -String filterName
+        +filter(int[] data) int[]
+    }
 
----
+    class ImplNonStandard {
+        +appliquerFiltre(String filterName, int[] data) int[]
+    }
 
-## Synthèse de l'Exercice 1 : Patrons Fondamentaux
+    class Compresseur {
+        <<abstract>>
+        +compresser(int[] data) int[]
+        -preparer(int[] data) int[]
+        #encoder(int[] data) int[]*
+        -finaliser(int[] data) int[]
+    }
 
-L'Exercice 1 traite quatre problématiques de conception représentatives des défis du génie logiciel. Chaque problème a fait l'objet d'une analyse conceptuelle, d'un diagramme de classes de référence,et d'une implémentation Java.
+    class CompresseurConcret {
+        #encoder(int[] data) int[]
+    }
 
-### Récapitulatif des Situations Traitées
-
-| Question | Problématique de Conception | Design Pattern(s) Retenu(s) | Catégorie GoF | Rôle Architectural |
-| :--- | :--- | :--- | :--- | :--- |
-| **Question 1** | Traitement unifié des figures simples (Cercle, Rectangle) et des groupes | **Composite** | Structurel | Permet de manipuler des objets individuels et des arborescences composites de manière transparente. |
-| **Question 2** | Squelette d'algorithme avec étapes variables & instanciation découplée | **Template Method** & **Simple Factory** | Comportemental & Créationnel | Fixe la cinématique algorithmique via l'inversion de contrôle et isole la création des plugins. |
-| **Question 3** | Extension dynamique de responsabilités sans modification du code source | **Decorator** (*Wrapper*) | Structurel | Enveloppe dynamiquement un composant par des pré/post-traitements sans sous-classification statique. |
-| **Question 4** | Notification d'état en temps réel avec couplage faible (Joueur / Environnement) | **Observer** (*Pub/Sub*) | Comportemental | Assure la synchronisation un-à-plusieurs réactive entre le joueur et les éléments du jeu. |
-
-### Accès au Rapport et au Code Source de l'Exercice 1
-
-Le rapport détaillé, les diagrammes de classes UML et les captures d'exécution pour chaque question sont consultables directement sur la branche dédiée :
-
-- **Rapport complet :** [README de la branche `exercice-1`](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/blob/exercice-1/README.md)
-- **Code source Java :** [`src/main/java/net/zoungrana/`](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/tree/exercice-1/src/main/java/net/zoungrana)
-  - `question1/` : Modélisation des figures géométriques (Composite).
-  - `question2/` : Algorithme à squelette invariant et fabrique de plugins (Template Method & Factory).
-  - `question3/` : Composant et décorateurs de traitement (Decorator).
-  - `question4/` : Modèle joueur/environnement (Observer).
-
-Pour basculer localement sur la branche de l'Exercice 1 :
-```bash
-git checkout exercice-1
+    TraitementImage --> "1" Filtre : filtre actif
+    TraitementImage --> "1" Compresseur : compression
+    Filtre <|.. FiltreConcret
+    Filtre <|.. AdaptateurFiltre
+    AdaptateurFiltre --> "1" ImplNonStandard : délègue à
+    Compresseur <|-- CompresseurConcret
 ```
 
----
+### Strategy — Changer le filtre à l’exécution
 
-## Présentation de l'Exercice 2 : Framework de Traitement d'Images
+`TraitementImage` joue le rôle de contexte. Il conserve une référence vers un filtre actif de type `Filtre` et lui délègue l’appel à `filter(data)`. Les classes concrètes implémentent cette interface et définissent chacune leur algorithme.
 
-L'Exercice 2 a pour objectif la conception et l'implémentation d'un **Framework orienté objet extensible** dédié au traitement d'images numériques représentées par des matrices unidimensionnelles d'entiers (`int[] data`).
+Par exemple, le client peut utiliser un filtre de flou, appeler `setFiltre` avec un filtre de contraste, puis relancer `filter(data)` sur la même instance de `TraitementImage`. Le deuxième appel exécute le filtre de contraste. C’est un remplacement de stratégie. Dans l’exercice 1, question 3, **Decorator** répondait à un autre besoin en enveloppant un composant pour lui ajouter des traitements autour de son appel.
 
-### Spécifications & Contraintes du Framework
+### Adapter — Intégrer le filtre existant
 
-1. **Opérations Clés :**
-   - **Filtrage :** `public int[] filter(int[] data)`
-   - **Compression :** `public int[] compresser(int[] data)`
+`ImplNonStandard` expose `appliquerFiltre(String filterName, int[] data)`. Pour l’utiliser via le contrat `Filtre`, `AdaptateurFiltre` implémente cette interface et conserve une référence à `ImplNonStandard` ainsi que le nom du filtre fourni à sa construction. Son appel `filter(data)` délègue à `appliquerFiltre(filterName, data)` et renvoie le résultat. Grâce à cette interface commune, l’adaptateur peut être sélectionné via `setFiltre` comme toute autre stratégie.
 
-2. **Principes Architecturaux :**
-   - **Principe Ouvert/Fermé (OCP) :** Le framework doit être fermé à la modification mais totalement ouvert aux extensions sans recompilation de son noyau.
-   - **Interchangeabilité dynamique des filtres :** Possibilité d'ajouter de nouvelles stratégies de filtrage et de commuter l'algorithme actif à l'exécution (*Runtime*) $\rightarrow$ **Patron Strategy**.
-   - **Interopérabilité avec l'existant :** Intégration transparente d'une ancienne classe non conforme `ImplNonStandard` (`public int[] appliquerFiltre(String filterName, int[] data)`) sans altérer le contrat du framework $\rightarrow$ **Patron Adapter**.
-   - **Squelette de compression standardisé :** Définition de la trame algorithmique de compression tout en déléguant les variantes aux sous-classes $\rightarrow$ **Patron Template Method**.
-   - **Configuration dynamique :** Application cliente permettant à l'utilisateur de charger dynamiquement les classes d'implémentation par saisie de leur nom qualifié (instanciation dynamique via réflexion ou fabrique).
+### Template Method — Fixer le déroulement de la compression
 
-> Le lien vers la branche `exercice-2` ainsi que son rapport détaillé seront intégrés ici dès la finalisation des développements correspondants.
+`TraitementImage.compresser(data)` délègue au `Compresseur` configuré. La classe abstraite `Compresseur` fixe l’ordre des étapes dans sa méthode publique `compresser`. Dans cette modélisation, elle prépare les données, transmet le résultat à `encoder`, puis finalise les données encodées. Chaque sous-classe implémente l’étape protégée et abstraite `encoder`. En Java, la méthode publique `compresser` sera déclarée `final` pour préserver cet ordre.
 
----
+On retrouve le même principe dans l’exercice 1, question 2, où `Plugin.appliquerAlgo()` définit la séquence et délègue les étapes variables à ses sous-classes. [Voir la classe `Plugin`](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/blob/exercice-1/src/main/java/net/zoungrana/question2/Plugin.java)
 
-## Instructions Générales d'Exécution
+### Principe ouvert/fermé
 
-### Prérequis
-- **Java Development Kit (JDK) :** version 17 ou supérieure (version 21 recommandée).
-- **Apache Maven :** version 3.8+.
-- **Git**
-
-### Compilation et Tests
-```bash
-# Cloner le dépôt
-git clone git@github-perso:charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns.git
-cd Activit-Pratique-N-4--TD-N-1---Design-Patterns
-
-# Basculer sur la branche de l'exercice souhaité
-git checkout exercice-1
-
-# Compiler le projet
-mvn clean compile
-```
+Les deux associations de `TraitementImage` pointent vers des types d’abstraction, `Filtre` et `Compresseur`. On peut ajouter un filtre en implémentant l’interface ou un compresseur en étendant la classe abstraite. Le client fournit les instances concrètes au framework, qui conserve les mêmes appels.
