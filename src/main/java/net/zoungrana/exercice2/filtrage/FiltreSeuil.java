@@ -4,6 +4,10 @@ package net.zoungrana.exercice2.filtrage;
 public class FiltreSeuil implements Filtre {
     private final int seuil;
 
+    public FiltreSeuil() {
+        this(128);
+    }
+
     public FiltreSeuil(int seuil) {
         this.seuil = seuil;
     }

@@ -8,6 +8,10 @@ public class AdaptateurFiltre implements Filtre {
     private final ImplNonStandard implementation;
     private final String filterName;
 
+    public AdaptateurFiltre() {
+        this(new ImplNonStandard(), "inversion");
+    }
+
     public AdaptateurFiltre(ImplNonStandard implementation, String filterName) {
         this.implementation = Objects.requireNonNull(implementation, "implementation");
         this.filterName = Objects.requireNonNull(filterName, "filterName");

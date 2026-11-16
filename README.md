@@ -77,3 +77,29 @@ On retrouve le même principe dans l’exercice 1, question 2, où `Plugin.appli
 ### Principe ouvert/fermé
 
 Les deux associations de `TraitementImage` pointent vers des types d’abstraction, `Filtre` et `Compresseur`. On peut ajouter un filtre en implémentant l’interface ou un compresseur en étendant la classe abstraite. Le client fournit les instances concrètes au framework, qui conserve les mêmes appels.
+
+## Question 3 — Application console
+
+Depuis la racine du projet, compiler puis lancer l’application avec Java 21.
+
+```bash
+mvn compile
+java -cp target/classes net.zoungrana.exercice2.application.ApplicationTraitementImage
+```
+
+Saisir le nom complet du filtre, puis celui du compresseur. Par exemple, entrer ces deux lignes.
+
+```text
+net.zoungrana.exercice2.filtrage.FiltreSeuil
+net.zoungrana.exercice2.compression.CompresseurRle
+```
+
+L’application charge chaque classe par réflexion, vérifie sa compatibilité avec `Filtre` ou `Compresseur`, puis utilise son constructeur public sans argument. Une nouvelle implémentation doit être accessible sur le classpath et respecter ce contrat de construction. L’application redemande le nom en cas d’erreur de chargement.
+
+`FiltreSeuil` utilise par défaut un seuil de 128. On peut aussi saisir `net.zoungrana.exercice2.adaptation.AdaptateurFiltre` pour utiliser l’inversion fournie par l’ancienne implémentation. L’application affiche le tableau d’exemple, son résultat filtré puis son encodage par le compresseur choisi. Avec RLE, les sorties sont des paires valeur et nombre d’occurrences.
+
+### Trace d’exécution
+
+Avec `FiltreSeuil` et `CompresseurRle`, le tableau filtré `[0, 0, 1, 1, 1, 1, 0, 0]` est encodé en `[0, 2, 1, 4, 0, 2]`.
+
+![Exécution de l’application console avec le filtre à seuil et la compression RLE](./execution-exo2-question-3.png)
