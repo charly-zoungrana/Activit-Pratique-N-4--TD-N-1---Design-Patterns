@@ -77,8 +77,6 @@ L'Exercice 2 a pour objectif la conception et l'implémentation d'un **Framework
    - **Squelette de compression standardisé :** Définition de la trame algorithmique de compression tout en déléguant les variantes aux sous-classes $\rightarrow$ **Patron Template Method**.
    - **Configuration dynamique :** Application cliente permettant à l'utilisateur de charger dynamiquement les classes d'implémentation par saisie de leur nom qualifié (instanciation dynamique via réflexion ou fabrique).
 
-La question 1 présente le diagramme de classes du framework et justifie le choix de Strategy, Adapter et Template Method. [Consulter la réponse à la question 1](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/blob/exercice-2/README.md#question-1--diagramme-de-classes)
-
 ---
 
 ## Instructions Générales d'Exécution
