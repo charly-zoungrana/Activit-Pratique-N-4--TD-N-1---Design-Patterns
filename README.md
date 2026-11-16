@@ -25,7 +25,7 @@ Le projet suit une stratégie de branches thématiques :
 | :--- | :--- | :---: | :--- |
 | **`main`** | Portail général, synthèse globale et navigation inter-branches | **Actif** | *Branche courante* |
 | **`exercice-1`** | Solutions complètes des 4 situations (Composite, Template Method, Factory, Decorator, Observer), diagrammes et traces d'exécution | **Terminé** | [Consulter la branche `exercice-1`](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/tree/exercice-1) |
-| **`exercice-2`** | Framework de traitement d'images (Strategy, Adapter, Template Method, instanciation dynamique) | *En cours* | [Consulter la branche `exercice-2`](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/tree/exercice-2) *(bientôt disponible)* |
+| **`exercice-2`** | Framework de traitement d'images (Strategy, Adapter, Template Method, instanciation dynamique) | *Question 1 documentée* | [Rapport de la branche `exercice-2`](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/blob/exercice-2/README.md) |
 
 ---
 
@@ -77,7 +77,7 @@ L'Exercice 2 a pour objectif la conception et l'implémentation d'un **Framework
    - **Squelette de compression standardisé :** Définition de la trame algorithmique de compression tout en déléguant les variantes aux sous-classes $\rightarrow$ **Patron Template Method**.
    - **Configuration dynamique :** Application cliente permettant à l'utilisateur de charger dynamiquement les classes d'implémentation par saisie de leur nom qualifié (instanciation dynamique via réflexion ou fabrique).
 
-> Le lien vers la branche `exercice-2` ainsi que son rapport détaillé seront intégrés ici dès la finalisation des développements correspondants.
+La question 1 présente le diagramme de classes du framework et justifie le choix de Strategy, Adapter et Template Method. [Consulter la réponse à la question 1](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/blob/exercice-2/README.md#question-1--diagramme-de-classes)
 
 ---
 
