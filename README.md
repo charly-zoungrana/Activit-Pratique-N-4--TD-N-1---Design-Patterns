@@ -25,7 +25,7 @@ Le projet suit une stratégie de branches thématiques :
 | :--- | :--- | :---: | :--- |
 | **`main`** | Portail général, synthèse globale et navigation inter-branches | **Actif** | *Branche courante* |
 | **`exercice-1`** | Solutions complètes des 4 situations (Composite, Template Method, Factory, Decorator, Observer), diagrammes et traces d'exécution | **Terminé** | [Consulter la branche `exercice-1`](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/tree/exercice-1) |
-| **`exercice-2`** | Framework de traitement d'images (Strategy, Adapter, Template Method, instanciation dynamique) | *Question 1 documentée* | [Rapport de la branche `exercice-2`](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/blob/exercice-2/README.md) |
+| **`exercice-2`** | Framework de traitement d'images (Strategy, Adapter, Template Method, instanciation dynamique) | **Terminé** | [Rapport de la branche `exercice-2`](https://github.com/charly-zoungrana/Activit-Pratique-N-4--TD-N-1---Design-Patterns/blob/exercice-2/README.md) |
 
 ---
 
